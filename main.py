@@ -1,3 +1,4 @@
+# Maze Game - main entry point
 import pygame
 import random
 
