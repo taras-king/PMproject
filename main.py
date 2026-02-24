@@ -1,3 +1,4 @@
+# Maze Game - version 1.0
 import pygame
 import random
 
