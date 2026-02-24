@@ -10,30 +10,30 @@ pygame.display.set_caption('Втеча з лабіринту')
 background_color = (0, 0, 0)
 cell_size = 40
 
-pygame.mixer.music.load('music.mp3')
-pygame.mixer.music.set_volume(0.0)
+pygame.mixer.music.load('music/background.mp3')
+pygame.mixer.music.set_volume(0.1)
 pygame.mixer.music.play(-1)
 
-sound_key = pygame.mixer.Sound('sound_key.mp3')
+sound_key = pygame.mixer.Sound('music/sound_key.mp3')
 sound_key.set_volume(1.0)
 
-sound_door = pygame.mixer.Sound('sound_door.mp3')
+sound_door = pygame.mixer.Sound('music/sound_door.mp3')
 sound_door.set_volume(1.0)
 
-player_img = [pygame.image.load(f'{i}.png') for i in range(1, 5)]
+player_img = [pygame.image.load(f'images/{i}.png') for i in range(1, 5)]
 player_img = [pygame.transform.scale(player, (cell_size, cell_size)) for player in player_img]
 player_id = 0
 
-wall_img = pygame.image.load('wall.png')
+wall_img = pygame.image.load('images/wall.png')
 wall_img = pygame.transform.scale(wall_img, (cell_size, cell_size))
 
-key_img = pygame.image.load('key.png')
+key_img = pygame.image.load('images/key.png')
 key_img = pygame.transform.scale(key_img, (cell_size, cell_size))
 
-door_img = pygame.image.load('door.png')
+door_img = pygame.image.load('images/door.png')
 door_img = pygame.transform.scale(door_img, (cell_size, cell_size))
 
-background_image = pygame.image.load('maze.png')
+background_image = pygame.image.load('images/maze.png')
 background_image = pygame.transform.scale(background_image, (800, 600))
 
 maze = [
