@@ -4,37 +4,43 @@ import random
 pygame.init()
 pygame.mixer.init()
 
-screen = pygame.display.set_mode((800, 600))
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Втеча з лабіринту')
 
-background_color = (0, 0, 0)
+BACKGROUND_COLOR = (0, 0, 0)
 cell_size = 40
 
-pygame.mixer.music.load('music.mp3')
-pygame.mixer.music.set_volume(0.0)
-pygame.mixer.music.play(-1)
+try:
+    pygame.mixer.music.load('music/background.mp3')
+    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.play(-1)
+    sound_key = pygame.mixer.Sound('music/sound_key.mp3')
+    sound_key.set_volume(1.0)
+    sound_door = pygame.mixer.Sound('music/sound_door.mp3')
+    sound_door.set_volume(1.0)
+except FileNotFoundError as e:
+    print(f"Помилка завантаження аудіо: {e}")
+    sound_key = None
+    sound_door = None
 
-sound_key = pygame.mixer.Sound('sound_key.mp3')
-sound_key.set_volume(1.0)
-
-sound_door = pygame.mixer.Sound('sound_door.mp3')
-sound_door.set_volume(1.0)
-
-player_img = [pygame.image.load(f'{i}.png') for i in range(1, 5)]
+player_img = [pygame.image.load(f'images/{i}.png') for i in range(1, 5)]
 player_img = [pygame.transform.scale(player, (cell_size, cell_size)) for player in player_img]
 player_id = 0
 
-wall_img = pygame.image.load('wall.png')
+wall_img = pygame.image.load('images/wall.png')
 wall_img = pygame.transform.scale(wall_img, (cell_size, cell_size))
 
-key_img = pygame.image.load('key.png')
+key_img = pygame.image.load('images/key.png')
 key_img = pygame.transform.scale(key_img, (cell_size, cell_size))
 
-door_img = pygame.image.load('door.png')
+door_img = pygame.image.load('images/door.png')
 door_img = pygame.transform.scale(door_img, (cell_size, cell_size))
 
-background_image = pygame.image.load('maze.png')
-background_image = pygame.transform.scale(background_image, (800, 600))
+background_image = pygame.image.load('images/maze.gif')
+background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 maze = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -64,7 +70,7 @@ key_position = random.choice(free_cells[:-1])
 door_position = free_cells[-1]
 
 clock = pygame.time.Clock()
-fps = 15
+FPS = 15
 player_x, player_y = 1, 1
 key_exists = False
 
@@ -121,30 +127,30 @@ def main_menu():
                     exit()
 
         screen.blit(background_image, (0, 0))
-        draw_button(screen, "Почати гру", (0, 150, 0), 150, 150, 500, 100)
-        draw_button(screen, "Як грати", (0, 120, 200), 150, 250, 500, 100)
-        draw_button(screen, "Вийти", (200, 0, 0), 150, 350, 500, 100)
+        draw_button(screen, "Почати гру", (0, 150, 0), 150, 145, 500, 80)
+        draw_button(screen, "Як грати", (0, 120, 200), 150, 255, 500, 80)
+        draw_button(screen, "Вийти", (200, 0, 0), 150, 365, 500, 80)
         pygame.display.flip()
 
 
-def win():
-    win = True
-    while win:
+def show_win_screen():
+    running_win = True
+    while running_win:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                win = False
+                running_win = False
                 exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
-                if 150 <= x <= 650 and 200 <= y <= 300:
-                    win = False
-                elif 150 <= x <= 650 and 350 <= y <= 450:
-                    win = False
+                if 150 <= x <= 650 and 220 <= y <= 300:
+                    running_win = False
+                elif 150 <= x <= 650 and 360 <= y <= 440:
+                    running_win = False
                     exit()
 
         screen.blit(background_image, (0, 0))
-        draw_button(screen, "Вітаю! Ти пройшов гру!", (0, 150, 0), 150, 200, 500, 100)
-        draw_button(screen, "Вийти", (200, 0, 0), 150, 350, 500, 100)
+        draw_button(screen, "Вітаю! Ти пройшов гру!", (0, 150, 0), 150, 220, 500, 80)
+        draw_button(screen, "Вийти", (200, 0, 0), 150, 360, 500, 80)
         pygame.display.flip()
 
 
@@ -164,7 +170,7 @@ while running:
                 player_y -= 1
             if event.key == pygame.K_DOWN and player_y < len(maze) - 1 and maze[player_y + 1][player_x] == 0:
                 player_y += 1
-    screen.fill(background_color)
+    screen.fill(BACKGROUND_COLOR)
     for y in range(len(maze)):
         for x in range(len(maze[0])):
             if maze[y][x] == 1:
@@ -173,7 +179,8 @@ while running:
     if not key_exists:
         if [player_x, player_y] == key_position:
             key_exists = True
-            sound_key.play()
+            if sound_key:
+                sound_key.play()
         else:
             screen.blit(key_img, (key_position[0] * cell_size, key_position[1] * cell_size))
 
@@ -182,11 +189,12 @@ while running:
     player_id = (player_id + 1) % len(player_img)
 
     if key_exists and [player_x, player_y] == door_position:
-        sound_door.play()
+        if sound_door:
+            sound_door.play()
         running = False
 
     pygame.display.flip()
-    clock.tick(fps)
+    clock.tick(FPS)
 
-win()
+show_win_screen()
 pygame.quit()
