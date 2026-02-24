@@ -1,4 +1,4 @@
-# Maze Game - main entry point
+# Maze Game - main entry point - version 1.0
 import pygame
 import random
 
